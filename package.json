@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "description": "Transpose is an autonomous AI agent that enables users to interact with blockchain systems using natural language instead of complex technical processes making it more accessible to non-technical users.",
   "main": "index.js",
+  "bin": {
+    "transpose": "./dist/cli/index.cli.js"
+  },
   "scripts": {
+    "start:cli": "ts-node-dev --transpile-only --respawn src/cli/index.cli.ts",
     "start:dev": "ts-node-dev --transpile-only --respawn src/index.ts",
     "build": "tsc",
     "start": "tsc && node dist/index.js",
@@ -27,6 +31,7 @@
   "homepage": "https://github.com/Dom-HTG/transpose#readme",
   "devDependencies": {
     "@types/express": "^5.0.3",
+    "@types/figlet": "^1.7.0",
     "@types/node": "^24.3.0",
     "cross-env": "^10.0.0",
     "prettier": "^3.6.2",
@@ -36,9 +41,12 @@
   "dependencies": {
     "@types/cors": "^2.8.19",
     "bullmq": "^5.58.4",
+    "chalk": "^5.6.0",
+    "commander": "^14.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
+    "figlet": "^1.8.2",
     "helmet": "^8.1.0",
     "pino": "^9.9.0",
     "pino-pretty": "^13.1.1",
