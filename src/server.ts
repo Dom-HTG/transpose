@@ -1,7 +1,7 @@
 import express from "express";
 import pino from "pino";
 import { BaseConfig, AppConfigs } from "./config/app.config";
-import { CliManager } from "./cli/index.cli";
+import { CliManager } from "./cli/cliManager";
 import { PinoLogger } from "./lib/logger/logger";
 import { Server } from "http";
 

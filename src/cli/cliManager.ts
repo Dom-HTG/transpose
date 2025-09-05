@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import figlet from "figlet";
 import chalk from "chalk";
 import { Command } from "commander";
@@ -34,9 +32,3 @@ export class CliManager {
     this.program.parse(process.argv);
   }
 }
-
-/* initialize appliation CLI */
-const cliManager = new CliManager();
-cliManager.bootstrapCli();
-
-console.log("App CLI tool initialized");
