@@ -2,7 +2,7 @@
   "name": "transpose",
   "version": "1.0.0",
   "description": "Transpose is an autonomous AI agent that enables users to interact with blockchain systems using natural language instead of complex technical processes making it more accessible to non-technical users.",
-  "main": "index.js",
+  "main": "dist/index.js",
   "bin": {
     "transpose": "./dist/cli/index.cli.js"
   },

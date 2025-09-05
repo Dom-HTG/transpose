@@ -40,7 +40,9 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
-  }, 
+    "forceConsistentCasingInFileNames": true,
+    "removeComments": false
+  },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]
 }
