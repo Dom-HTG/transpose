@@ -1,6 +1,8 @@
 import figlet from "figlet";
 import chalk from "chalk";
 import { Command } from "commander";
+import readline from 'readline';
+import { stdin, stdout } from "process";
 
 export class CliManager {
   private program: Command;
@@ -17,8 +19,22 @@ export class CliManager {
   }
 
   private transposeAction(query: string) {
-    console.log(chalk.greenBright(`🚀 Query received: "${query}"`));
-    console.log(chalk.cyan("✨ CLI is working as expected!"));
+    if (query) console.log(chalk.greenBright(`🚀 Query received: "${query}"`));
+  }
+
+  private async interractiveTerminalMode() {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+
+    rl.setPrompt(chalk.yellow("💡 Enter your query: "));
+    rl.prompt();
+
+    rl.on("line", (line) => {
+      this.transposeAction(line.trim());
+      rl.prompt(); // keep alive
+    });
   }
 
   public bootstrapCli() {
@@ -26,8 +42,7 @@ export class CliManager {
       .name("transpose")
       .description("Natural language blockchain transaction agent")
       .version("1.0.0")
-      .argument("<query>", "User Query to execute")
-      .action((query) => this.transposeAction(query));
+      .action(() => this.interractiveTerminalMode());
 
     this.program.parse(process.argv);
   }

@@ -4,6 +4,6 @@
 
 import { CliManager } from "./cli/cliManager";
 
-/* initialize appliation CLI */
+
 const cliManager = new CliManager();
 cliManager.bootstrapCli();
