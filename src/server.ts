@@ -1,9 +1,8 @@
 import express from "express";
 import pino from "pino";
 import { BaseConfig, AppConfigs } from "./config/app.config";
-import { CliManager } from "./cli/cliManager";
 import { PinoLogger } from "./lib/logger/logger";
-import { Server } from "http";
+import { errorHandler } from "./lib/errors/errorHandler";
 
 export class AppServer {
   /* start express application */
@@ -24,6 +23,9 @@ export class AppServer {
     this.config = configObject.serveConfigs();
 
     this.logger.debug("App configurations initialized");
+
+    /* error handler */
+    this.registerErrorHandler();
   }
 
   public async start() {
@@ -32,5 +34,9 @@ export class AppServer {
         `application is running on port ${this.config.server.port}`,
       );
     });
+  }
+
+  private registerErrorHandler() {
+    this.app.use(errorHandler);
   }
 }

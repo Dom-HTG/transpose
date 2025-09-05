@@ -30,3 +30,6 @@
 {"level":20,"time":1757064268985,"pid":11788,"hostname":"Dom","msg":"App logger initialized"}
 {"level":20,"time":1757064268986,"pid":11788,"hostname":"Dom","msg":"App configurations initialized"}
 {"level":30,"time":1757064268991,"pid":11788,"hostname":"Dom","msg":"application is running on port 2039"}
+{"level":20,"time":1757064340121,"pid":11628,"hostname":"Dom","msg":"App logger initialized"}
+{"level":20,"time":1757064340122,"pid":11628,"hostname":"Dom","msg":"App configurations initialized"}
+{"level":30,"time":1757064340127,"pid":11628,"hostname":"Dom","msg":"application is running on port 2039"}
