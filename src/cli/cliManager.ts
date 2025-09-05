@@ -1,7 +1,7 @@
 import figlet from "figlet";
 import chalk from "chalk";
 import { Command } from "commander";
-import readline from 'readline';
+import readline from "readline";
 import { stdin, stdout } from "process";
 
 export class CliManager {

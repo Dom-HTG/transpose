@@ -33,3 +33,42 @@
 {"level":20,"time":1757064340121,"pid":11628,"hostname":"Dom","msg":"App logger initialized"}
 {"level":20,"time":1757064340122,"pid":11628,"hostname":"Dom","msg":"App configurations initialized"}
 {"level":30,"time":1757064340127,"pid":11628,"hostname":"Dom","msg":"application is running on port 2039"}
+{"level":20,"time":1757070445194,"pid":23424,"hostname":"Dom","msg":"App logger initialized"}
+{"level":20,"time":1757070445194,"pid":23424,"hostname":"Dom","msg":"App configurations initialized"}
+{"level":30,"time":1757070445199,"pid":23424,"hostname":"Dom","msg":"application is running on port 2039"}
+{"level":20,"time":1757070509812,"pid":10744,"hostname":"Dom","msg":"App logger initialized"}
+{"level":20,"time":1757070509812,"pid":10744,"hostname":"Dom","msg":"App configurations initialized"}
+{"level":30,"time":1757070509818,"pid":10744,"hostname":"Dom","msg":"application is running on port 2039"}
+{"level":20,"time":1757070933168,"pid":21624,"hostname":"Dom","msg":"App logger initialized"}
+{"level":20,"time":1757070933169,"pid":21624,"hostname":"Dom","msg":"App configurations initialized"}
+{"level":30,"time":1757070933175,"pid":21624,"hostname":"Dom","msg":"application is running on port 2039"}
+{"level":20,"time":1757071066410,"pid":14696,"hostname":"Dom","msg":"App logger initialized"}
+{"level":20,"time":1757071066411,"pid":14696,"hostname":"Dom","msg":"App configurations initialized"}
+{"level":30,"time":1757071066415,"pid":14696,"hostname":"Dom","msg":"application is running on port 2039"}
+{"level":20,"time":1757071093376,"pid":828,"hostname":"Dom","msg":"App logger initialized"}
+{"level":20,"time":1757071093377,"pid":828,"hostname":"Dom","msg":"App configurations initialized"}
+{"level":30,"time":1757071093381,"pid":828,"hostname":"Dom","msg":"application is running on port 2039"}
+{"level":20,"time":1757071397577,"pid":8460,"hostname":"Dom","msg":"App logger initialized"}
+{"level":20,"time":1757071397578,"pid":8460,"hostname":"Dom","msg":"App configurations initialized"}
+{"level":30,"time":1757071397584,"pid":8460,"hostname":"Dom","msg":"application is running on port 2039"}
+{"level":20,"time":1757071473983,"pid":7196,"hostname":"Dom","msg":"App logger initialized"}
+{"level":20,"time":1757071473984,"pid":7196,"hostname":"Dom","msg":"App configurations initialized"}
+{"level":30,"time":1757071473989,"pid":7196,"hostname":"Dom","msg":"application is running on port 2039"}
+{"level":20,"time":1757071899956,"pid":14652,"hostname":"Dom","msg":"App logger initialized"}
+{"level":20,"time":1757071899957,"pid":14652,"hostname":"Dom","msg":"App configurations initialized"}
+{"level":30,"time":1757071899961,"pid":14652,"hostname":"Dom","msg":"application is running on port 2039"}
+{"level":20,"time":1757072518299,"pid":17540,"hostname":"Dom","msg":"App logger initialized"}
+{"level":20,"time":1757072518299,"pid":17540,"hostname":"Dom","msg":"App configurations initialized"}
+{"level":30,"time":1757072518303,"pid":17540,"hostname":"Dom","msg":"application is running on port 2039"}
+{"level":20,"time":1757072612651,"pid":14900,"hostname":"Dom","msg":"App logger initialized"}
+{"level":20,"time":1757072612652,"pid":14900,"hostname":"Dom","msg":"App configurations initialized"}
+{"level":30,"time":1757072612656,"pid":14900,"hostname":"Dom","msg":"application is running on port 2039"}
+{"level":20,"time":1757072612656,"pid":14900,"hostname":"Dom","msg":"Signal [SIGTERM] received, shutting down application"}
+{"level":20,"time":1757072612657,"pid":14900,"hostname":"Dom","msg":"Signal [SIGINT] received, shutting down application"}
+{"level":20,"time":1757072612657,"pid":14900,"hostname":"Dom","msg":"shutdown application server complete"}
+{"level":20,"time":1757072635918,"pid":17884,"hostname":"Dom","msg":"App logger initialized"}
+{"level":20,"time":1757072635918,"pid":17884,"hostname":"Dom","msg":"App configurations initialized"}
+{"level":30,"time":1757072635922,"pid":17884,"hostname":"Dom","msg":"application is running on port 2039"}
+{"level":20,"time":1757072635922,"pid":17884,"hostname":"Dom","msg":"Signal [SIGTERM] received, shutting down application"}
+{"level":20,"time":1757072635922,"pid":17884,"hostname":"Dom","msg":"Signal [SIGINT] received, shutting down application"}
+{"level":20,"time":1757072635922,"pid":17884,"hostname":"Dom","msg":"shutdown application server complete"}
