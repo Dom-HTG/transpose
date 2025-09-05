@@ -43,6 +43,7 @@
     "@langchain/core": "^0.3.74",
     "@langchain/groq": "^0.2.3",
     "@langchain/langgraph": "^0.4.9",
+    "@types/axios": "^0.9.36",
     "@types/cors": "^2.8.19",
     "axios": "^1.11.0",
     "bullmq": "^5.58.4",

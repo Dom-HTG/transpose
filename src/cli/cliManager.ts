@@ -18,8 +18,15 @@ export class CliManager {
     console.log(textSync);
   }
 
-  private transposeAction(query: string) {
+  private async transposeAction(query: string) {
     if (query) console.log(chalk.greenBright(`🚀 Query received: "${query}"`));
+
+    try {
+      const resp = await axios.post('http://localhost:2039/chat', { query });
+      console.log(chalk.cyan(`Transpose Response: ${resp.data}`));
+    } catch (e: any) {
+      console.error(chalk.red(`Transpose Error: ${e.response?.message}`));
+    }
   }
 
   private async interractiveTerminalMode() {
