@@ -7,7 +7,6 @@
     "transpose": "./dist/cli/index.cli.js"
   },
   "scripts": {
-    "start:cli": "ts-node-dev --transpile-only --respawn src/cli/index.cli.ts",
     "start:dev": "ts-node-dev --transpile-only --respawn src/index.ts",
     "build": "tsc",
     "start": "tsc && node dist/index.js",

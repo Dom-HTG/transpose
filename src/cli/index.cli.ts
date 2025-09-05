@@ -34,6 +34,3 @@ export class CliManager {
         this.program.parse(process.argv);
     }
 }
-
-const cli = new CliManager();
-cli.bootstrapCli();

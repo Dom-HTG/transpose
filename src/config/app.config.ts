@@ -1,12 +1,34 @@
 import dotenv from 'dotenv';
-dotenv.config();
+dotenv.config({
+    path: './src/config/app.env'
+});
+
+export interface BaseConfig {
+    server: ServerConfig,
+    chain: ChainConfig
+};
+
+interface ServerConfig {
+    port: string;
+    logsDir: string;
+};
+
+interface ChainConfig {
+    viemApiKey: string;
+};
 
 export class AppConfigs {
+    /* server config */
+    public readonly port: string;
+    public readonly logsDir: string;
+
     public readonly viemApiKey: string;
 
     constructor() {
         console.log('Loading Application configurations...');
 
+        this.port = this.getenv('APP_PORT');
+        this.logsDir = this.getenv('LOGS_DIR');
         this.viemApiKey = this.getenv('VIEM_API_KEY');
     }
 
@@ -17,11 +39,17 @@ export class AppConfigs {
         return value;
     }
 
-    public serveConfigs() {
-        const configs = {
-            viemApiKey: this.viemApiKey
+    public serveConfigs(): BaseConfig {
+        const configs: BaseConfig = {
+            server: {
+                port: this.port,
+                logsDir: this.logsDir
+            },
+            chain: {
+                viemApiKey: this.viemApiKey
+            }
         };
 
         return configs;
-    };
+    }
 }
