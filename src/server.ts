@@ -4,6 +4,7 @@ import pino from "pino";
 import { BaseConfig, AppConfigs } from "./config/app.config";
 import { PinoLogger } from "./lib/logger/logger";
 import { errorHandler } from "./lib/errors/errorHandler";
+import { AgentManager } from "./infrastructure/agent/agent";
 
 export class AppServer {
   /* start express application */
@@ -26,6 +27,12 @@ export class AppServer {
     this.config = configObject.serveConfigs();
 
     this.logger.debug("App configurations initialized");
+
+    /* boostrap agent */
+    const agent = new AgentManager();
+    const chain = agent.getChain();
+
+    
 
     /* error handler */
     this.registerErrorHandler();
