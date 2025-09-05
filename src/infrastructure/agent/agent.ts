@@ -1,18 +1,18 @@
-import { ChatGroq } from '@langchain/groq';
+import { ChatGroq } from "@langchain/groq";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 
 export class AgentManager {
-    private modelInstance: ChatGroq;
-    private chain: any;
+  private modelInstance: ChatGroq;
+  private chain: any;
 
-    constructor() {
-        this.modelInstance = new ChatGroq({
-            model: 'llama-3.3-70b-versatile',
-            temperature: 0,
-        });
+  constructor() {
+    this.modelInstance = new ChatGroq({
+      model: "llama-3.3-70b-versatile",
+      temperature: 0,
+    });
 
-        /* create prompt template */
-        const prompt = ChatPromptTemplate.fromTemplate(`
+    /* create prompt template */
+    const prompt = ChatPromptTemplate.fromTemplate(`
             You are an expert blockchain agent called Transpose. 
             Your task is to parse **natural language queries** into a structured JSON action 
             that can be executed on a blockchain.
@@ -77,10 +77,10 @@ export class AgentManager {
             }
         `);
 
-        this.chain = prompt.pipe(this.modelInstance);
-    }
+    this.chain = prompt.pipe(this.modelInstance);
+  }
 
-    public getChain() {
-        return this.chain;
-    }
+  public getChain() {
+    return this.chain;
+  }
 }

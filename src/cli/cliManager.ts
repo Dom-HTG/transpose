@@ -2,7 +2,7 @@ import figlet from "figlet";
 import chalk from "chalk";
 import { Command } from "commander";
 import readline from "readline";
-import axios from 'axios';
+import axios from "axios";
 
 export class CliManager {
   private program: Command;
@@ -22,7 +22,7 @@ export class CliManager {
     if (query) console.log(chalk.greenBright(`🚀 Query received: "${query}"`));
 
     try {
-      const resp = await axios.post('http://localhost:2039/chat', { query });
+      const resp = await axios.post("http://localhost:2039/chat", { query });
       console.log(chalk.cyan(`Transpose Response: ${resp.data}`));
     } catch (e: any) {
       console.error(chalk.red(`Transpose Error: ${e.response?.message}`));

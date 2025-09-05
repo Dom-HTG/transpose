@@ -7,22 +7,22 @@ export interface BaseConfig {
   server: ServerConfig;
   chain: ChainConfig;
   agent: AgentConfig;
-};
+}
 
 interface ServerConfig {
   port: string;
   logsDir: string;
-};
+}
 
 interface ChainConfig {
   viemApiKey: string;
-};
+}
 
 interface AgentConfig {
   grokApiKey: string;
   langmsithTracing: boolean;
   langsmithApiKey: string;
-};
+}
 
 export class AppConfigs {
   /* server config */
@@ -44,9 +44,9 @@ export class AppConfigs {
     this.viemApiKey = this.getenv("VIEM_API_KEY");
 
     /* agent core env */
-    this.grokApiKey = this.getenv('GROK_API_KEY');
-    this.langsmithTracing = this.getBoolEnv('LANGSMITH_TRACING');
-    this.langsmithApiKey = this.getenv('LANGSMITH_API_KEY');
+    this.grokApiKey = this.getenv("GROK_API_KEY");
+    this.langsmithTracing = this.getBoolEnv("LANGSMITH_TRACING");
+    this.langsmithApiKey = this.getenv("LANGSMITH_API_KEY");
   }
 
   private getenv(envVariable: string): string {
@@ -60,7 +60,8 @@ export class AppConfigs {
   private getBoolEnv(boolEnv: string): boolean {
     const boolValue = process.env[boolEnv] as string;
 
-    if (!boolValue) throw new Error(`environment Variable <${boolEnv}> not set`);
+    if (!boolValue)
+      throw new Error(`environment Variable <${boolEnv}> not set`);
     return Boolean(boolValue);
   }
 
@@ -77,7 +78,7 @@ export class AppConfigs {
         grokApiKey: this.grokApiKey,
         langmsithTracing: this.langsmithTracing,
         langsmithApiKey: this.langsmithApiKey,
-      }
+      },
     };
 
     return configs;

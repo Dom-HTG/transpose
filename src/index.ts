@@ -6,6 +6,6 @@ import { AppServer } from "./server";
   const serverInstance = await app.start();
 
   /* graceful shutdown */
-  app.gracefulShutdown('SIGTERM', serverInstance);
-  app.gracefulShutdown('SIGINT', serverInstance);
+  app.gracefulShutdown("SIGTERM", serverInstance);
+  app.gracefulShutdown("SIGINT", serverInstance);
 })();

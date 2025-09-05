@@ -32,13 +32,13 @@ export class AppServer {
     const agent = new AgentManager();
     const chain = agent.getChain();
 
-    
-
     /* error handler */
     this.registerErrorHandler();
   }
 
-  public async start(): Promise< Server<typeof IncomingMessage, typeof ServerResponse>> {
+  public async start(): Promise<
+    Server<typeof IncomingMessage, typeof ServerResponse>
+  > {
     const serverInstance = this.app.listen(this.config.server.port, () => {
       this.logger.info(
         `application is running on port ${this.config.server.port}`,
@@ -56,7 +56,10 @@ export class AppServer {
     this.app.use(errorHandler);
   }
 
-  public gracefulShutdown(signal: string, serverInstance:  Server<typeof IncomingMessage, typeof ServerResponse>) {
+  public gracefulShutdown(
+    signal: string,
+    serverInstance: Server<typeof IncomingMessage, typeof ServerResponse>,
+  ) {
     this.logger.debug(`Signal [${signal}] received, shutting down application`);
 
     /* set timeout to 10s */
@@ -68,12 +71,15 @@ export class AppServer {
       /* close server */
       serverInstance.close(() => {
         clearTimeout(timeout);
-        this.logger.debug('shutdown application server complete');
+        this.logger.debug("shutdown application server complete");
         process.exit(0);
-      })
+      });
     } catch (e) {
       clearTimeout(timeout);
-      this.logger.error(e, 'failed to shutdown gracfully. force shut down starting');
+      this.logger.error(
+        e,
+        "failed to shutdown gracfully. force shut down starting",
+      );
       process.exit(1);
     }
   }

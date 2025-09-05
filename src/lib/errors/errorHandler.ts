@@ -31,9 +31,9 @@ export function errorHandler(
   switch (err.constructor) {
     case ZodError:
       return res.status(400).json({
-        type: 'ZOD_VALIDATION_ERROR',
+        type: "ZOD_VALIDATION_ERROR",
         success: false,
-        message: 'invalid input <param>',
+        message: "invalid input <param>",
       });
 
     case ValidationError:
@@ -87,9 +87,9 @@ export function errorHandler(
 
     case BlockchainConnectionError:
       return res.status(err.statusCode).json({
-        type: 'BLOCKCHAIN_CONNECTION_ERROR',
+        type: "BLOCKCHAIN_CONNECTION_ERROR",
         success: false,
-        message: err.message
-      })
+        message: err.message,
+      });
   }
 }

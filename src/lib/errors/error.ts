@@ -77,6 +77,6 @@ export class InternalServerError extends ApplicationError {
 /* application blockchain (viem) errors */
 export class BlockchainConnectionError extends ApplicationError {
   constructor(message: string, statusCode = 502) {
-    super(message, statusCode)
+    super(message, statusCode);
   }
 }
