@@ -1,4 +1,4 @@
 node_modules
 app.env
 dist
-logs
+logs/
