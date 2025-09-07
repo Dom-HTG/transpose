@@ -18,12 +18,10 @@ export class CliManager {
     console.log(textSync);
   }
 
-  private async transposeAction(query: string) {
+  private async transposeAction(query: string){
     try {
       const resp = await axios.post("http://127.0.0.1:2039/chat", { query });
-      console.log(
-        chalk.cyan(`Transpose Response: ${JSON.stringify(resp.data.data)}`),
-      );
+      return resp;
     } catch (e: any) {
       console.error(chalk.red(`Transpose Error: ${e}`));
     }
@@ -35,13 +33,28 @@ export class CliManager {
       output: process.stdout,
     });
 
-    rl.setPrompt(chalk.yellow("💡 Enter your query: "));
+    rl.setPrompt(chalk.yellow("💡 User: "));
     rl.prompt();
 
-    rl.on("line", (line) => {
-      this.transposeAction(line.trim());
-      rl.prompt(); // keep alive
-    });
+     rl.on("line", async (line) => {
+    try {
+      const query = line.trim();
+      if (!query) {
+        rl.prompt();
+        return;
+      }
+
+      // Wait for response
+      const response = await this.transposeAction(query);
+
+      // Show response as prompt
+      rl.setPrompt(chalk.green(`🤖 Transpose: ${response?.data.data}\n\n💡 Enter your query: `));
+    } catch (err) {
+      rl.setPrompt(chalk.red(`❌ Error: ${err}\n\n💡 Enter your query: `));
+    }
+
+    rl.prompt();
+  });
   }
 
   public bootstrapCli() {
