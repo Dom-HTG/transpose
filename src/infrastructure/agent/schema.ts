@@ -1,4 +1,5 @@
 import { z } from "zod";
+import   { isStructuredToolParams, StructuredToolParams } from '@langchain/core/tools';
 
 const transferSchema = z.object({
   action: z.literal("transfer"),
@@ -37,4 +38,24 @@ const baseSchema = z.discriminatedUnion("action", [
   balanceSchema,
 ]);
 
-export { baseSchema };
+/* tools schema */
+
+const transferToolParams: StructuredToolParams = {
+    name: "transfer",
+    description: "send tokens from one wallet to another on a blockchain",
+    schema: transferSchema,
+};
+
+const balanceCheckToolParams: StructuredToolParams = {
+    name: "balance_check",
+    description: "Fetch the current token balance of a specific wallet address on a given blockchain network.",
+    schema: balanceSchema,
+};
+
+const swapToolParams: StructuredToolParams = {
+    name: "swap",
+    description:"Exchange one cryptocurrency token for another on a specified blockchain and protocol (e.g., Uniswap on Ethereum, Base, or Polygon).",
+    schema: swapSchema
+};
+
+export { baseSchema, swapToolParams, balanceCheckToolParams, transferToolParams };

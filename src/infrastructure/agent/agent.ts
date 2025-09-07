@@ -5,9 +5,11 @@ import { AIMessage } from "@langchain/core/messages";
 import { BaseConfig } from "../../config/app.config";
 import { StructuredOutputParser } from "@langchain/core/output_parsers";
 import { RunnablePassthrough } from "@langchain/core/runnables";
-import { baseSchema } from "./schema.agent";
+import { baseSchema } from "./schema";
 
 /* boostraps transpose agent */
+
+/* this class is responsible for instantiating an agent and parsing user requests to required schema */
 
 export class AgentManager {
   private modelInstance: ChatGroq;
