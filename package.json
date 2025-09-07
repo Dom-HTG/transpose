@@ -7,10 +7,9 @@
     "transpose": "./dist/cli.js"
   },
   "scripts": {
-    "transpose": "ts-node-dev --respawn --transpile-only src/cli.ts",
-    "server:dev": "ts-node-dev --transpile-only --respawn src/index.ts",
+    "cli": "ts-node src/cli.ts",
+    "server:dev": "ts-node-dev --transpile-only src/index.ts",
     "build": "tsc && node dist/index.js",
-    "start": "concurrently -n app,cli -c cyan,green --handle-input  \"npm run server:dev\" \"npm run transpose\"",
     "format": "prettier --write ."
   },
   "repository": {
@@ -32,7 +31,7 @@
   "devDependencies": {
     "@types/express": "^5.0.3",
     "@types/figlet": "^1.7.0",
-    "@types/node": "^24.3.0",
+    "@types/node": "^24.3.1",
     "concurrently": "^9.2.1",
     "cross-env": "^10.0.0",
     "prettier": "^3.6.2",

@@ -19,13 +19,13 @@ export class CliManager {
   }
 
   private async transposeAction(query: string) {
-    if (query) console.log(chalk.greenBright(`🚀 Query received: "${query}"`));
-
     try {
-      const resp = await axios.post("http://localhost:2039/chat", { query });
-      console.log(chalk.cyan(`Transpose Response: ${resp.data}`));
+      const resp = await axios.post("http://127.0.0.1:2039/chat", { query });
+      console.log(
+        chalk.cyan(`Transpose Response: ${JSON.stringify(resp.data.data)}`),
+      );
     } catch (e: any) {
-      console.error(chalk.red(`Transpose Error: ${e.response?.message}`));
+      console.error(chalk.red(`Transpose Error: ${e}`));
     }
   }
 
