@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
 import pino from "pino";
-import { BaseConfig } from "../../config/app.config";
+import { BaseConfig } from "../../../config/app.config";
 
 export class DatabaseClient {
     private logger: pino.Logger;

@@ -1,6 +1,23 @@
 import pino from "pino";
 import { ToolInput } from "../../internal/ochestrator/agentOchestrator";
 
+interface ITransaction {
+    id: string;
+    ownerId: string;
+    chain: "Base" | "Ethereum" | "Polygon" | "Optimism" | "Arbitrum";
+    type: "transfer" | "swap";
+    preview: string; // text-based summary of the transaction.
+    userOp: string; // raw operation payload [ERC-4337 userOp].
+    fromAddress: string;
+    toAddress: string;
+    txHash: string;
+    asset: string; // e.g., ETH, USDC, BTC
+    amount: string;
+    status: "pending" | "confirmed" | "failed";
+    createdAt: Date;
+    updatedAt: Date;
+}
+
 export class TransferService {
   logger: pino.Logger;
   constructor(private applogger: pino.Logger) {
