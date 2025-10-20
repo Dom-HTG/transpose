@@ -1,48 +1,29 @@
 import { TransferService } from "../../domain/transaction/transaction.service";
-import { transferToolParams, swapToolParams, balanceCheckToolParams } from "./schema";
-
+import {
+  transferToolParams,
+  swapToolParams,
+  balanceCheckToolParams,
+} from "./schema";
+import { ToolInput } from "../../internal/ochestrator/agentOchestrator";
 
 export interface AgentToolsContract {
-    transferTool(): any;
-    swapTool(): any;
-    balanceCheckTool(): any;
-};
-
-export interface transferDTO {
-    to: string;
-    from: string;
-    amount: string;
-    asset: string;
-    chain: string;
+  transferTool(): any;
+  swapTool(): any;
+  balanceCheckTool(): any;
 }
-
-export interface swapDTO {
-    fromAsset: string;
-    toAsset: string;
-    amount: string;
-    protocol: string;
-    chain: string;
-    from: string;
-    to: string;
-}
-
 export class AgentTools implements AgentToolsContract {
-    constructor(private readonly transferService: TransferService) {}
+  constructor(private readonly transferService: TransferService) {}
 
-    transferTool() {
-        return {
-            ...transferToolParams,
-            execute: async (input: transferDTO) => {
-                return this.transferService.transferToken(input);
-            }
-        }
-    }
+  transferTool() {
+    return {
+      ...transferToolParams,
+      execute: async (input: ToolInput) => {
+        return this.transferService.transferToken(input);
+      },
+    };
+  }
 
-    swapTool() {
+  swapTool() {}
 
-    }
-
-    balanceCheckTool() {
-        
-    }
+  balanceCheckTool() {}
 }

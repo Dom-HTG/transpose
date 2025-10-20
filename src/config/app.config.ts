@@ -5,6 +5,7 @@ dotenv.config({
 
 export interface BaseConfig {
   server: ServerConfig;
+  db: DbConfig;
   chain: ChainConfig;
   agent: AgentConfig;
 }
@@ -12,6 +13,14 @@ export interface BaseConfig {
 interface ServerConfig {
   port: string;
   logsDir: string;
+}
+
+interface DbConfig {
+  host: string;
+  port: number;
+  username: string;
+  password: string;
+  database: string;
 }
 
 interface ChainConfig {
@@ -25,9 +34,13 @@ interface AgentConfig {
 }
 
 export class AppConfigs {
-  /* server config */
   public readonly port: string;
   public readonly logsDir: string;
+  public readonly dbHost: string;
+  public readonly dbPort: number
+  public readonly dbUsername: string;
+  public readonly dbPassword: string
+  public readonly dbDatabase: string;
   public readonly viemApiKey: string;
   public readonly grokApiKey: string;
   public readonly langsmithTracing: boolean;
@@ -40,13 +53,20 @@ export class AppConfigs {
     this.port = this.getenv("APP_PORT");
     this.logsDir = this.getenv("LOGS_DIR");
 
+    /* database core env */
+    this.dbHost = this.getenv("DB_HOST");
+    this.dbPort = Number(this.getenv("DB_PORT"));
+    this.dbUsername = this.getenv("DB_USERNAME");
+    this.dbPassword = this.getenv("DB_PASSWORD");
+    this.dbDatabase = this.getenv("DB_DATABASE");
+
     /* blockchain core env */
     this.viemApiKey = this.getenv("VIEM_API_KEY");
 
     /* agent core env */
     this.grokApiKey = this.getenv("GROK_API_KEY");
-    this.langsmithTracing = this.getBoolEnv("LANGSMITH_TRACING");
-    this.langsmithApiKey = this.getenv("LANGSMITH_API_KEY");
+    this.langsmithTracing = this.getBoolEnv("LANGCHAIN_TRACING_V2");
+    this.langsmithApiKey = this.getenv("LANGCHAIN_API_KEY");
   }
 
   private getenv(envVariable: string): string {
@@ -70,6 +90,13 @@ export class AppConfigs {
       server: {
         port: this.port,
         logsDir: this.logsDir,
+      },
+      db: {
+        host: this.dbHost,
+        port: this.dbPort,
+        username: this.dbUsername,
+        password: this.dbPassword,
+        database: this.dbDatabase,
       },
       chain: {
         viemApiKey: this.viemApiKey,

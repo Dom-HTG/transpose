@@ -7,7 +7,10 @@ import { errorHandler } from "./lib/errors/errorHandler";
 import { AgentManager } from "./infrastructure/agent/agent";
 import { ValidationError } from "./lib/errors/error";
 import { Runnable } from "@langchain/core/runnables";
-import { AIMessage } from "@langchain/core/messages";
+import { ToolInput, ToolOrchestrator } from "./internal/ochestrator/agentOchestrator";
+import { AgentTools } from "./infrastructure/agent/tools";
+import { TransferService } from "./domain/transaction/transaction.service";
+import { baseSchema } from "./infrastructure/agent/schema";
 
 interface ChatRequestBody {
   query?: string;
@@ -19,6 +22,7 @@ export class AppServer {
   private httpServer: any;
   private config: BaseConfig;
   private logger: pino.Logger;
+  private ochestrator: ToolOrchestrator;
 
   constructor() {
     this.registerMiddlewareStack();
@@ -40,16 +44,25 @@ export class AppServer {
     const pinoLogger = new PinoLogger();
     this.logger = pinoLogger.getLogger();
 
-    this.logger.debug("App logger initialized");
+    this.logger.debug("application logger initialized");
 
     /* load application configurations */
     const configObject = new AppConfigs();
     this.config = configObject.serveConfigs();
 
-    this.logger.debug("App configurations initialized");
+    this.logger.debug("application config initialized");
+
+    /* boostrap domain services */
+    const transferService: TransferService = new TransferService(this.logger);
+
+    /* bootstrap agent tools */
+    const tools: AgentTools = new AgentTools(transferService);
+
+    /* boostrap tool ochestrator */
+    this.ochestrator = new ToolOrchestrator(tools);
 
     /* boostrap agent */
-    const agent = new AgentManager(this.config);
+    const agent = new AgentManager(this.config, this.ochestrator);
     const chain = agent.getChain();
 
     /* app routes */
@@ -74,7 +87,7 @@ export class AppServer {
 
   /* temp */
   private registerApplicationTestRoutes(
-    chain: Runnable<{ input: string }, AIMessage>,
+    chain: Runnable<{ input: string }, ToolInput>,
   ) {
     this.app.post(
       "/chat",
@@ -94,15 +107,26 @@ export class AppServer {
 
           this.logger.debug(response, "LangChain response"); // temp
 
-          let result: string;
+          let parsedResponse: ToolInput;
 
-          if (typeof response === "string") {
-            result = response;
-          } else if ("content" in response) {
-            result = (response as any).content;
+          /* parse AI response [JSON] */
+          if ("content" in response && response.content) {
+            const raw = response.content;
+
+            const json =
+              typeof raw === "string"
+                ? JSON.parse(raw) // only parse if it’s a json string
+                : raw;
+
+            parsedResponse = baseSchema.parse(json) as ToolInput;
           } else {
-            result = JSON.stringify(response);
+            throw new Error("failed to parse AI response");
           }
+
+          /* invoke ochestrator */
+          const result = this.ochestrator.mapTool(parsedResponse);
+
+          this.logger.debug(result, 'ochestrator result');
 
           // return value
           res.status(200).json({
