@@ -29,6 +29,8 @@ export class AppServer {
   private config: BaseConfig;
   private logger: pino.Logger;
   private ochestrator: ToolOrchestrator;
+  private transfer: TransferService;
+  private user: UserService;
 
   constructor() {
     this.registerMiddlewareStack();
@@ -65,14 +67,14 @@ export class AppServer {
     const dataSource = this.dbClient.getDataSource(); // retrieve TypeORM DataSource.
 
     /* bootstrap domain services */
-    const transferService: TransferService = new TransferService(
+    this.transfer = new TransferService(
       this.logger,
       dataSource,
     );
-    const userService: UserService = new UserService(this.logger, dataSource);
+    this.user = new UserService(this.logger, dataSource);
 
     /* bootstrap agent tools */
-    const tools: AgentTools = new AgentTools(transferService);
+    const tools: AgentTools = new AgentTools(this.transfer);
 
     /* boostrap tool ochestrator */
     this.ochestrator = new ToolOrchestrator(tools);
@@ -105,6 +107,7 @@ export class AppServer {
   private registerApplicationTestRoutes(
     chain: Runnable<{ input: string }, ToolInput>,
   ) {
+    /* chat route */
     this.app.post(
       "/chat",
       async (
@@ -155,6 +158,9 @@ export class AppServer {
         }
       },
     );
+
+    /* auth routes */
+    this.app.post('/auth/email/signup', this.user.signUpEmail.bind(this.user)); /* signup with email */
   }
 
   private registerMiddlewareStack() {

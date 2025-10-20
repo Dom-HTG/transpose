@@ -1,0 +1,35 @@
+# Use in development mode
+services:
+  database:
+    image: postgres:16
+    restart: always
+    container_name: transpose_db
+    environment:
+      DB_USER: transpose_user
+      DB_PASSWORD: transpose_password
+      DB_NAME: transpose
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  app:
+    build: .
+    container_name: transpose_server
+    restart: always
+    ports:
+      - "4059:3059"
+    depends_on:
+      - postgres
+    environment:
+      NODE_ENV: development
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: transpose_user
+      DB_PASSWORD: transpose_password
+      DB_NAME: transpose
+    volumes:
+      - .:/app
+    command: npm run server:dev
+
+volumes:
+  pgdata:
