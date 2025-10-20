@@ -23,7 +23,7 @@ export class Wallet extends BaseEntity {
   @Column({ type: "boolean", default: false, name: "is_primary" })
   isPrimary!: boolean;
 
-  // Nonce for transaction signing or sequencing
+  // Nonce for transaction signing
   @Column({ type: "int", default: 0 })
   nonce!: number;
 }

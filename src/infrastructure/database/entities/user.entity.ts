@@ -1,17 +1,17 @@
-import { Entity, Column, PrimaryGeneratedColumn,OneToMany } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from "typeorm";
 import { BaseEntity } from "./base";
 import { Alias } from "./alias.entity";
 import { UserIntent } from "./userIntent.entity";
 import { Swap } from "./swap.entity";
 
 interface IPriceCache {
-    id: string;
-    tokenSymbol: string;
-    chain: "Base" | "Ethereum" | "Polygon" | "Optimism" | "Arbitrum";
-    priceUSD: string;
-    timestamp: Date; // timestamp of price fetch.
-    oracleSource: "CoinGecko" | "CoinMarketCap" | "Chainlink";
-    createdAt: Date;
+  id: string;
+  tokenSymbol: string;
+  chain: "Base" | "Ethereum" | "Polygon" | "Optimism" | "Arbitrum";
+  priceUSD: string;
+  timestamp: Date; // timestamp of price fetch.
+  oracleSource: "CoinGecko" | "CoinMarketCap" | "Chainlink";
+  createdAt: Date;
 }
 
 @Entity("user")
@@ -20,6 +20,13 @@ export class User extends BaseEntity {
   // Nullable if using wallet-only authentication
   @Column({ type: "varchar", nullable: true, unique: true })
   email!: string | null;
+
+  @Column({
+    type: "varchar",
+    name: "password",
+    nullable: true,
+  })
+  password!: string | null;
 
   // Authentication method used
   @Column({
@@ -51,4 +58,3 @@ export class User extends BaseEntity {
   @OneToMany(() => Swap, (swap) => swap.owner, { cascade: true })
   swaps!: Swap[];
 }
-

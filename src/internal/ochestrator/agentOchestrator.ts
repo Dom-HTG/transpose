@@ -1,9 +1,10 @@
 import { AgentTools } from "../../infrastructure/agent/tools";
-import { transferDTO, swapDTO, balanceCheckDTO } from "../../infrastructure/agent/schema";
-export type ToolInput =
-  | transferDTO
-  | swapDTO
-  | balanceCheckDTO;
+import {
+  transferDTO,
+  swapDTO,
+  balanceCheckDTO,
+} from "../../infrastructure/agent/schema";
+export type ToolInput = transferDTO | swapDTO | balanceCheckDTO;
 
 export class ToolOrchestrator {
   private toolRegistry: Record<

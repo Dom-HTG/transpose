@@ -37,9 +37,9 @@ export class AppConfigs {
   public readonly port: string;
   public readonly logsDir: string;
   public readonly dbHost: string;
-  public readonly dbPort: number
+  public readonly dbPort: number;
   public readonly dbUsername: string;
-  public readonly dbPassword: string
+  public readonly dbPassword: string;
   public readonly dbDatabase: string;
   public readonly viemApiKey: string;
   public readonly grokApiKey: string;

@@ -1,7 +1,5 @@
 import { z } from "zod";
-import {
-  StructuredToolParams,
-} from "@langchain/core/tools";
+import { StructuredToolParams } from "@langchain/core/tools";
 
 const transferSchema = z.object({
   action: z.literal("transfer"),

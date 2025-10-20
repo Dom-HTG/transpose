@@ -25,7 +25,7 @@ export class CliManager {
     } catch (e: any) {
       console.error(chalk.red(`Transpose Error: ${e}`));
     }
-  } 
+  }
 
   private async interractiveTerminalMode() {
     const rl = readline.createInterface({

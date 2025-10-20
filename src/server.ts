@@ -2,14 +2,19 @@ import express from "express";
 import { IncomingMessage, ServerResponse, Server } from "http";
 import pino from "pino";
 import { BaseConfig, AppConfigs } from "./config/app.config";
+import { DatabaseClient } from "./infrastructure/database/client/database";
 import { PinoLogger } from "./lib/logger/logger";
 import { errorHandler } from "./lib/errors/errorHandler";
 import { AgentManager } from "./infrastructure/agent/agent";
 import { ValidationError } from "./lib/errors/error";
 import { Runnable } from "@langchain/core/runnables";
-import { ToolInput, ToolOrchestrator } from "./internal/ochestrator/agentOchestrator";
+import {
+  ToolInput,
+  ToolOrchestrator,
+} from "./internal/ochestrator/agentOchestrator";
 import { AgentTools } from "./infrastructure/agent/tools";
 import { TransferService } from "./domain/transaction/transaction.service";
+import { UserService } from "./domain/onboarding/user/user.service";
 import { baseSchema } from "./infrastructure/agent/schema";
 
 interface ChatRequestBody {
@@ -20,6 +25,7 @@ export class AppServer {
   /* start express application */
   private app: express.Application = express();
   private httpServer: any;
+  private dbClient: DatabaseClient;
   private config: BaseConfig;
   private logger: pino.Logger;
   private ochestrator: ToolOrchestrator;
@@ -52,8 +58,18 @@ export class AppServer {
 
     this.logger.debug("application config initialized");
 
-    /* boostrap domain services */
-    const transferService: TransferService = new TransferService(this.logger);
+    /* initialize database */
+    this.dbClient = new DatabaseClient(this.logger, this.config);
+    this.dbClient.connect();
+
+    const dataSource = this.dbClient.getDataSource(); // retrieve TypeORM DataSource.
+
+    /* bootstrap domain services */
+    const transferService: TransferService = new TransferService(
+      this.logger,
+      dataSource,
+    );
+    const userService: UserService = new UserService(this.logger, dataSource);
 
     /* bootstrap agent tools */
     const tools: AgentTools = new AgentTools(transferService);
@@ -105,7 +121,7 @@ export class AppServer {
             input: userQuery,
           });
 
-          this.logger.debug(response, "LangChain response"); // temp
+          this.logger.debug(response, "LangChain response");
 
           let parsedResponse: ToolInput;
 
@@ -126,7 +142,7 @@ export class AppServer {
           /* invoke ochestrator */
           const result = this.ochestrator.mapTool(parsedResponse);
 
-          this.logger.debug(result, 'ochestrator result');
+          this.logger.debug(result, "ochestrator result");
 
           // return value
           res.status(200).json({
@@ -162,6 +178,9 @@ export class AppServer {
     }, 1000);
 
     try {
+      /* disconnect database */
+      this.dbClient.disconnect();
+
       /* close server */
       serverInstance.close(() => {
         clearTimeout(timeout);
@@ -171,7 +190,7 @@ export class AppServer {
       clearTimeout(timeout);
       this.logger.error(
         e,
-        "failed to shutdown gracfully. force shut down starting",
+        "failed to shutdown gracfully. force shut down starting...",
       );
       process.exit(1);
     }

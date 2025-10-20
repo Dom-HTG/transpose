@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: "price_cache" })
-export class PriceCache{
+export class PriceCache {
   @PrimaryGeneratedColumn("uuid")
   id!: string;
 
@@ -27,6 +27,9 @@ export class PriceCache{
   oracleSource!: "CoinGecko" | "CoinMarketCap" | "Chainlink";
 
   // No updatedAt needed
-  @Column({ type: "timestamp with time zone", default: () => "CURRENT_TIMESTAMP" })
+  @Column({
+    type: "timestamp with time zone",
+    default: () => "CURRENT_TIMESTAMP",
+  })
   createdAt!: Date;
 }

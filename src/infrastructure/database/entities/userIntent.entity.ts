@@ -1,9 +1,4 @@
-import {
-  Entity,
-  Column,
-  ManyToOne,
-  JoinColumn
-} from "typeorm";
+import { Entity, Column, ManyToOne, JoinColumn } from "typeorm";
 import { BaseEntity } from "./base";
 import { User } from "./user.entity";
 
@@ -26,7 +21,7 @@ export class UserIntent extends BaseEntity {
   @Column({
     type: "enum",
     enum: ["pending", "confirmed", "failed"],
-    default: "pending"
+    default: "pending",
   })
   status!: "pending" | "confirmed" | "failed";
 }

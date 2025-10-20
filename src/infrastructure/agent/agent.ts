@@ -6,11 +6,9 @@ import { StructuredOutputParser } from "@langchain/core/output_parsers";
 import { RunnablePassthrough } from "@langchain/core/runnables";
 import { baseSchema } from "./schema";
 import { ToolOrchestrator } from "../../internal/ochestrator/agentOchestrator";
-import { z } from 'zod';
-
+import { z } from "zod";
 
 type ParsedOutput = z.infer<typeof baseSchema>;
-
 
 /* boostraps transpose agent */
 
@@ -20,7 +18,7 @@ export class AgentManager {
   private modelInstance: ChatGroq;
   private chain: Runnable<{ input: string }, ParsedOutput>;
   private formatInstruction: string;
-//   private ochestrator: ToolOrchestrator;
+  //   private ochestrator: ToolOrchestrator;
 
   constructor(config: BaseConfig, toolOchestrator: ToolOrchestrator) {
     this.modelInstance = new ChatGroq({
