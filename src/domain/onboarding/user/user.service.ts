@@ -1,7 +1,7 @@
 import pino from "pino";
 import express from "express";
 import bcrypt from "bcryptjs";
-import { ValidationError } from "../../../lib/errors/error";
+import { ValidationError, AuthenticationError } from "../../../lib/errors/error";
 import { DataSource } from "typeorm";
 import { User } from "../../../infrastructure/database/entities/user.entity";
 
@@ -55,7 +55,7 @@ export class UserService {
       const existingUser = userRepository.findOne({ where: { email } });
       if (existingUser !== null) {
         this.logger.warn("Signup failed: User already exists with this email");
-        throw new ValidationError("User already exists with this email");
+        throw new AuthenticationError("User already exists with this email");
       }
 
       const hashPassword = await bcrypt.hash(password, 10);
@@ -82,19 +82,42 @@ export class UserService {
     }
   }
 
-  public loginUser(req: express.Request, res: express.Response) {
-    const { email, password } = req.body;
+  public loginUser(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
+    try {
+      const { email, password } = req.body;
 
-    if (!email || !password) {
-      this.logger.error("Validation error: Email and password are required");
-      throw new ValidationError("Email and password are required");
+      if (!email || !password) {
+        this.logger.error("Validation error: Email and password are required");
+        throw new ValidationError("Email and password are required");
+      }
+
+      // fetch user from db
+      const userRepository = this.dataSource.getRepository(User);
+      const user = userRepository.findOne({ where: { email } });
+
+      if (user === null) {
+        this.logger.error("Authentication error: User not found");
+        throw new AuthenticationError("User not found");
+      }
+
+      // compare password
+      const passwordMatch = bcrypt.compare(password, user.password);
+      if (!passwordMatch) {
+        this.logger.error("Authentication error: Incorrect password");
+        throw new AuthenticationError("Incorrect password");
+      }
+
+      this.logger.debug("User login successful!");
+
+      // issue JWT or session here
+
+
+      res.status(200).json({
+        msg: "User logged in successfully",
+      });
+          
+    } catch (e) {
+      next(e);
     }
-
-    // Database lookup logic.
-
-    this.logger.debug("User login successful!"); // to:remove
-    res.status(200).json({
-      msg: "User logged in successfully",
-    });
   }
 }

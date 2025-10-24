@@ -5,8 +5,8 @@ services:
     restart: always
     container_name: transpose_db
     environment:
-      DB_USER: transpose_user
-      DB_PASSWORD: transpose_password
+      DB_USER: transpose_admin
+      DB_PASSWORD: transpose_admin_password
       DB_NAME: transpose
     volumes:
       - pgdata:/var/lib/postgresql/data
@@ -24,8 +24,8 @@ services:
       NODE_ENV: development
       DB_HOST: postgres
       DB_PORT: 5432
-      DB_USER: transpose_user
-      DB_PASSWORD: transpose_password
+      DB_USER: transpose_admin
+      DB_PASSWORD: transpose_admin_password
       DB_NAME: transpose
     volumes:
       - .:/app
