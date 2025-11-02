@@ -9,7 +9,7 @@
   "scripts": {
     "cli": "ts-node src/cli.ts",
     "server:dev": "ts-node-dev --transpile-only src/index.ts",
-    "build": "tsc && node dist/index.js",
+    "build": "tsc",
     "format": "prettier --write ."
   },
   "repository": {

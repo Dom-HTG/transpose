@@ -25,14 +25,13 @@ interface ChatRequestBody {
 export class AppServer {
   /* start express application */
   private app: express.Application = express();
-  private httpServer: any;
-  private dbClient: DatabaseClient;
-  private config: BaseConfig;
-  private logger: pino.Logger;
-  private ochestrator: ToolOrchestrator;
-  private transfer: TransferService;
-  private swap: SwapService;
-  private user: UserService;
+  private dbClient!: DatabaseClient;
+  private config!: BaseConfig;
+  private logger!: pino.Logger;
+  private ochestrator!: ToolOrchestrator;
+  private transfer!: TransferService;
+  private swap!: SwapService;
+  private user!: UserService;
 
   constructor() {
     this.registerMiddlewareStack();
@@ -49,22 +48,22 @@ export class AppServer {
         next();
       },
     );
+  }
 
+  public async bootstrapDependencies() {
     /* initialize application logger */
     const pinoLogger = new PinoLogger();
     this.logger = pinoLogger.getLogger();
-
     this.logger.debug("application logger initialized");
 
     /* load application configurations */
     const configObject = new AppConfigs();
     this.config = configObject.serveConfigs();
-
     this.logger.debug("application config initialized");
 
-    /* initialize database */
+    /* connect to database */
     this.dbClient = new DatabaseClient(this.logger, this.config);
-    this.dbClient.connect();
+    await this.dbClient.connect();
 
     const dataSource = this.dbClient.getDataSource(); // retrieve TypeORM DataSource.
 
