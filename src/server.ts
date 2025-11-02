@@ -14,6 +14,7 @@ import {
 } from "./internal/ochestrator/agentOchestrator";
 import { AgentTools } from "./infrastructure/agent/tools";
 import { TransferService } from "./domain/transaction/transaction.service";
+import { SwapService } from "./domain/swap/swap.service";
 import { UserService } from "./domain/onboarding/user/user.service";
 import { baseSchema } from "./infrastructure/agent/schema";
 
@@ -30,6 +31,7 @@ export class AppServer {
   private logger: pino.Logger;
   private ochestrator: ToolOrchestrator;
   private transfer: TransferService;
+  private swap: SwapService;
   private user: UserService;
 
   constructor() {
@@ -39,7 +41,7 @@ export class AppServer {
     this.app.use(
       (
         req: express.Request,
-        res: express.Response,
+        _res: express.Response,
         next: express.NextFunction,
       ) => {
         this.logger.debug(`${req.method} ${req.url}`);
@@ -67,20 +69,18 @@ export class AppServer {
     const dataSource = this.dbClient.getDataSource(); // retrieve TypeORM DataSource.
 
     /* bootstrap domain services */
-    this.transfer = new TransferService(
-      this.logger,
-      dataSource,
-    );
+    this.transfer = new TransferService(this.logger, dataSource);
     this.user = new UserService(this.logger, dataSource);
+    this.swap = new SwapService(this.logger, dataSource);
 
     /* bootstrap agent tools */
-    const tools: AgentTools = new AgentTools(this.transfer);
+    const tools: AgentTools = new AgentTools(this.transfer, this.swap);
 
     /* boostrap tool ochestrator */
     this.ochestrator = new ToolOrchestrator(tools);
 
     /* boostrap agent */
-    const agent = new AgentManager(this.config, this.ochestrator);
+    const agent = new AgentManager(this.config);
     const chain = agent.getChain();
 
     /* app routes */
@@ -160,7 +160,10 @@ export class AppServer {
     );
 
     /* auth routes */
-    this.app.post('/auth/email/signup', this.user.signUpEmail.bind(this.user)); /* signup with email */
+    this.app.post(
+      "/auth/email/signup",
+      this.user.signUpEmail.bind(this.user),
+    ); /* signup with email */
   }
 
   private registerMiddlewareStack() {

@@ -10,24 +10,23 @@ import { z } from "zod";
 
 type ParsedOutput = z.infer<typeof baseSchema>;
 
-/* boostraps transpose agent */
-
-/* this class is responsible for instantiating an agent and parsing user requests to required schema */
+/* 
+  AgentManager boostraps transpose agent
+  - Uses a ChatGroq model
+  - Parses natural language into structured blockchain actions
+*/
 
 export class AgentManager {
   private modelInstance: ChatGroq;
   private chain: Runnable<{ input: string }, ParsedOutput>;
   private formatInstruction: string;
-  //   private ochestrator: ToolOrchestrator;
 
-  constructor(config: BaseConfig, toolOchestrator: ToolOrchestrator) {
+  constructor(config: BaseConfig) {
     this.modelInstance = new ChatGroq({
       model: "llama-3.3-70b-versatile",
       temperature: 0,
       apiKey: config.agent.grokApiKey,
     });
-
-    // this.ochestrator = toolOchestrator;
 
     /* spawn parser with schema validation */
     const parser = StructuredOutputParser.fromZodSchema(baseSchema as any);
@@ -89,12 +88,18 @@ export class AgentManager {
         User Query: {input}
     `);
 
-    this.chain = RunnablePassthrough.assign({
+    this.chain = RunnablePassthrough.assign<
+      { input: string },
+      { format_instructions: string }
+    >({
       format_instructions: () => this.formatInstruction,
     })
       .pipe(prompt)
       .pipe(this.modelInstance)
-      .pipe(parser);
+      .pipe(parser as unknown as Runnable<any, ParsedOutput>) as Runnable<
+      { input: string },
+      ParsedOutput
+    >;
   }
 
   public getChain() {

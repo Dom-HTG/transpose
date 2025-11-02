@@ -1,7 +1,10 @@
 import pino from "pino";
 import express from "express";
 import bcrypt from "bcryptjs";
-import { ValidationError, AuthenticationError } from "../../../lib/errors/error";
+import {
+  ValidationError,
+  AuthenticationError,
+} from "../../../lib/errors/error";
 import { DataSource } from "typeorm";
 import { User } from "../../../infrastructure/database/entities/user.entity";
 
@@ -82,40 +85,53 @@ export class UserService {
     }
   }
 
-  public loginUser(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
+  public async loginUser(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ): Promise<void> {
     try {
       const { email, password } = req.body;
 
       if (!email || !password) {
-        this.logger.error("Validation error: Email and password are required");
+        this.logger.warn("Login failed: Missing required credentials");
         throw new ValidationError("Email and password are required");
       }
 
       // fetch user from db
       const userRepository = this.dataSource.getRepository(User);
-      const user = userRepository.findOne({ where: { email } });
+      const user = await userRepository.findOne({ where: { email } });
 
-      if (user === null) {
-        this.logger.error("Authentication error: User not found");
+      if (!user) {
+        this.logger.warn("Login failed: User not found");
         throw new AuthenticationError("User not found");
       }
 
       // compare password
+      if (!user.password)
+        throw new AuthenticationError("User password not found");
       const passwordMatch = bcrypt.compare(password, user.password);
       if (!passwordMatch) {
-        this.logger.error("Authentication error: Incorrect password");
+        this.logger.warn("Login failed: Incorrect password");
         throw new AuthenticationError("Incorrect password");
       }
 
-      this.logger.debug("User login successful!");
+      this.logger.debug(`User logged in: ${user.email}`);
 
       // issue JWT or session here
 
-
       res.status(200).json({
         msg: "User logged in successfully",
+        user: {
+          id: user.id,
+          email: user.email,
+          auth: user.auth,
+          recovery: user.recovery,
+          primaryWalletAddress: user.primaryWalletAddress,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
+        },
       });
-          
     } catch (e) {
       next(e);
     }

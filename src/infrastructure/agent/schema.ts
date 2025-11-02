@@ -38,22 +38,22 @@ const baseSchema = z.discriminatedUnion("action", [
   balanceSchema,
 ]);
 
-/* tools schema */
+/* tools definition */
 
-const transferToolParams: StructuredToolParams = {
+const transferTool: StructuredToolParams = {
   name: "transfer",
   description: "send tokens from one wallet to another on a blockchain",
   schema: transferSchema,
 };
 
-const balanceCheckToolParams: StructuredToolParams = {
+const balanceCheckTool: StructuredToolParams = {
   name: "balance_check",
   description:
     "Fetch the current token balance of a specific wallet address on a given blockchain network.",
   schema: balanceSchema,
 };
 
-const swapToolParams: StructuredToolParams = {
+const swapTool: StructuredToolParams = {
   name: "swap",
   description:
     "Exchange one cryptocurrency token for another on a specified blockchain and protocol (e.g., Uniswap on Ethereum, Base, or Polygon).",
@@ -64,9 +64,4 @@ export type transferDTO = z.infer<typeof transferSchema>;
 export type balanceCheckDTO = z.infer<typeof balanceSchema>;
 export type swapDTO = z.infer<typeof swapSchema>;
 
-export {
-  baseSchema,
-  swapToolParams,
-  balanceCheckToolParams,
-  transferToolParams,
-};
+export { baseSchema, swapTool, balanceCheckTool, transferTool };
