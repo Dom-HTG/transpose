@@ -15,7 +15,6 @@ interface ISwap {
   updatedAt: Date;
 }
 
-
 export class SwapService {
   logger: pino.Logger;
   constructor(

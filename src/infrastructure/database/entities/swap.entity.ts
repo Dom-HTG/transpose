@@ -36,4 +36,12 @@ export class Swap extends BaseEntity {
   // Slippage percentage (e.g., "0.5")
   @Column({ type: "varchar" })
   slippage!: string;
+
+  // Swap status
+  @Column({
+    type: "enum",
+    enum: ["pending", "confirmed", "failed"],
+    default: "pending",
+  })
+  status!: "pending" | "confirmed" | "failed";
 }

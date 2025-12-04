@@ -55,7 +55,7 @@ export class UserService {
       const userRepository = this.dataSource.getRepository(User);
 
       // check if user already exists
-      const existingUser = userRepository.findOne({ where: { email } });
+      const existingUser = await userRepository.findOne({ where: { email } });
       if (existingUser !== null) {
         this.logger.warn("Signup failed: User already exists with this email");
         throw new AuthenticationError("User already exists with this email");
@@ -110,7 +110,7 @@ export class UserService {
       // compare password
       if (!user.password)
         throw new AuthenticationError("User password not found");
-      const passwordMatch = bcrypt.compare(password, user.password);
+      const passwordMatch = await bcrypt.compare(password, user.password);
       if (!passwordMatch) {
         this.logger.warn("Login failed: Incorrect password");
         throw new AuthenticationError("Incorrect password");

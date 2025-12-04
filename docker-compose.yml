@@ -12,6 +12,21 @@ services:
       - pgdata:/var/lib/postgresql/data
     ports:
       - "5422:5432"
+    networks:
+      - transpose-network
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    container_name: transpose_redis
+    command: redis-server --requirepass transpose_redis_password
+    volumes:
+      - redisdata:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - transpose-network
+
   app:
     build: .
     container_name: transpose_server
@@ -20,16 +35,39 @@ services:
       - "4059:3059"
     depends_on:
       - database
+      - redis
     environment:
       NODE_ENV: development
+      APP_PORT: 3059
+      LOGS_DIR: ./logs
+
+      # Database
       DB_HOST: database
       DB_PORT: 5432
-      DB_USER: transpose_admin
+      DB_USERNAME: transpose_admin
       DB_PASSWORD: transpose_admin_password
-      DB_NAME: transpose
+      DB_DATABASE: transpose
+
+      # Redis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: transpose_redis_password
+
+      # JWT (Change these in production!)
+      JWT_ACCESS_SECRET: dev_access_secret_change_in_production
+      JWT_REFRESH_SECRET: dev_refresh_secret_change_in_production
+      JWT_ACCESS_EXPIRY: 15m
+      JWT_REFRESH_EXPIRY: 7d
     volumes:
       - .:/app
     command: npm run server:dev
+    networks:
+      - transpose-network
+
+networks:
+  transpose-network:
+    driver: bridge
 
 volumes:
   pgdata:
+  redisdata:

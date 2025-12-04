@@ -30,7 +30,7 @@ export class TransferService {
 
   public transferToken(transferData: ToolInput) {
     this.logger.debug("Transfer service hit succesful!");
-    this.logger.trace({ transferData }, 'transfer payload');
+    this.logger.trace({ transferData }, "transfer payload");
   }
 
   public checkTokenBalance(balanceData: ToolInput) {

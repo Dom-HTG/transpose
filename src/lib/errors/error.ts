@@ -1,5 +1,5 @@
 import express from "express";
-import { success, ZodError } from "zod";
+import { ZodError } from "zod";
 
 export class ApplicationError extends Error {
   public statusCode: number;

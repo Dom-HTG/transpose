@@ -12,10 +12,11 @@ import {
   ToolInput,
   ToolOrchestrator,
 } from "./internal/ochestrator/agentOchestrator";
-import { AgentTools } from "./infrastructure/agent/tools";
-import { TransferService } from "./domain/transaction/transaction.service";
-import { SwapService } from "./domain/swap/swap.service";
-import { UserService } from "./domain/onboarding/user/user.service";
+import { MCPTools } from "./internal/mcp/tools";
+import { BullMQClient } from "./infrastructure/queue-cache/bullmq.client";
+import { WalletWorker } from "./app/workers/wallet.worker";
+import { TransactionWorker } from "./app/workers/transaction.worker";
+import { SwapWorker } from "./app/workers/swap.worker";
 import { baseSchema } from "./infrastructure/agent/schema";
 
 interface ChatRequestBody {
@@ -26,12 +27,13 @@ export class AppServer {
   /* start express application */
   private app: express.Application = express();
   private dbClient!: DatabaseClient;
+  private bullmq!: BullMQClient;
   private config!: BaseConfig;
   private logger!: pino.Logger;
   private ochestrator!: ToolOrchestrator;
-  private transfer!: TransferService;
-  private swap!: SwapService;
-  private user!: UserService;
+  private walletWorker!: WalletWorker;
+  private transactionWorker!: TransactionWorker;
+  private swapWorker!: SwapWorker;
 
   constructor() {
     this.registerMiddlewareStack();
@@ -67,18 +69,46 @@ export class AppServer {
 
     const dataSource = this.dbClient.getDataSource(); // retrieve TypeORM DataSource.
 
-    /* bootstrap domain services */
-    this.transfer = new TransferService(this.logger, dataSource);
-    this.user = new UserService(this.logger, dataSource);
-    this.swap = new SwapService(this.logger, dataSource);
+    /* initialize BullMQ client and queues */
+    this.bullmq = new BullMQClient(this.logger, this.config);
+    this.logger.debug("BullMQ client initialized");
 
-    /* bootstrap agent tools */
-    const tools: AgentTools = new AgentTools(this.transfer, this.swap);
+    /* initialize workers */
+    this.walletWorker = new WalletWorker(this.logger, dataSource);
+    this.transactionWorker = new TransactionWorker(this.logger, dataSource);
+    this.swapWorker = new SwapWorker(this.logger, dataSource);
 
-    /* boostrap tool ochestrator */
-    this.ochestrator = new ToolOrchestrator(tools);
+    /* register workers with queues */
+    this.bullmq.createWorker(
+      "wallet-provisioning",
+      async (job) => await this.walletWorker.process(job),
+    );
 
-    /* boostrap agent */
+    this.bullmq.createWorker(
+      "transaction-processing",
+      async (job) => await this.transactionWorker.process(job),
+    );
+
+    this.bullmq.createWorker(
+      "swap-processing",
+      async (job) => await this.swapWorker.process(job),
+    );
+
+    this.logger.debug("Workers registered and started");
+
+    /* bootstrap MCP tools */
+    const mcpTools = new MCPTools(
+      this.logger,
+      dataSource,
+      this.bullmq.walletQueue,
+      this.bullmq.transactionQueue,
+      this.bullmq.swapQueue,
+    );
+
+    /* bootstrap tool orchestrator */
+    this.ochestrator = new ToolOrchestrator(mcpTools);
+
+    /* bootstrap agent */
     const agent = new AgentManager(this.config);
     const chain = agent.getChain();
 
@@ -115,7 +145,9 @@ export class AppServer {
         next: express.NextFunction,
       ) => {
         try {
-          const { query: userQuery } = req.body as ChatRequestBody;
+          const { query: userQuery, userId } = req.body as ChatRequestBody & {
+            userId?: string;
+          };
           if (!userQuery)
             throw new ValidationError("user query was not received");
 
@@ -129,26 +161,35 @@ export class AppServer {
 
           /* parse AI response [JSON] */
           if ("content" in response && response.content) {
-            const raw = response.content;
+            const rawContent = response.content;
+            let cleanedContent: string | object;
 
-            const json =
-              typeof raw === "string"
-                ? JSON.parse(raw) // only parse if it’s a json string
-                : raw;
+            // Strip markdown code fences if present (only for strings)
+            if (typeof rawContent === "string") {
+              cleanedContent = rawContent.trim();
+              // Remove ```json\n{...}\n``` or ```\n{...}\n```
+              cleanedContent = cleanedContent.replace(/^```(?:json)?\s*\n?/, "").replace(/\n?```\s*$/, "");
+              cleanedContent = cleanedContent.trim();
+            } else {
+              cleanedContent = rawContent;
+            }
+
+            const json = typeof cleanedContent === "string" ? JSON.parse(cleanedContent) : cleanedContent;
 
             parsedResponse = baseSchema.parse(json) as ToolInput;
           } else {
             throw new Error("failed to parse AI response");
           }
 
-          /* invoke ochestrator */
-          const result = this.ochestrator.mapTool(parsedResponse);
+          /* invoke orchestrator with userId for authenticated actions */
+          const result = await this.ochestrator.mapTool(parsedResponse, userId);
 
-          this.logger.debug(result, "ochestrator result");
+          this.logger.debug(result, "orchestrator result");
 
           // return value
           res.status(200).json({
             success: true,
+            action: parsedResponse.action,
             data: result,
           });
         } catch (e: any) {
@@ -158,11 +199,30 @@ export class AppServer {
       },
     );
 
-    /* auth routes */
-    this.app.post(
-      "/auth/email/signup",
-      this.user.signUpEmail.bind(this.user),
-    ); /* signup with email */
+    /* Queue metrics endpoint */
+    this.app.get("/metrics/queues", async (_req, res, next) => {
+      try {
+        const metrics = {
+          wallet: await this.bullmq.getQueueMetrics("wallet"),
+          transaction: await this.bullmq.getQueueMetrics("transaction"),
+          swap: await this.bullmq.getQueueMetrics("swap"),
+          notification: await this.bullmq.getQueueMetrics("notification"),
+        };
+
+        res.status(200).json({ success: true, metrics });
+      } catch (e) {
+        next(e);
+      }
+    });
+
+    /* Health check endpoint */
+    this.app.get("/health", (_req, res) => {
+      res.status(200).json({
+        status: "healthy",
+        timestamp: new Date().toISOString(),
+        availableTools: this.ochestrator.getAvailableTools(),
+      });
+    });
   }
 
   private registerMiddlewareStack() {
@@ -174,7 +234,7 @@ export class AppServer {
     this.app.use(errorHandler);
   }
 
-  private gracefulShutdown(
+  private async gracefulShutdown(
     signal: string,
     serverInstance: Server<typeof IncomingMessage, typeof ServerResponse>,
   ) {
@@ -188,6 +248,11 @@ export class AppServer {
     try {
       /* disconnect database */
       this.dbClient.disconnect();
+
+      /* close BullMQ queues and workers */
+      if (this.bullmq) {
+        await this.bullmq.closeAll();
+      }
 
       /* close server */
       serverInstance.close(() => {

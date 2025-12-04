@@ -5,7 +5,7 @@ import { AppServer } from "./server";
 (async () => {
   try {
     const app: AppServer = new AppServer();
-    app.bootstrapDependencies();
+    await app.bootstrapDependencies();
     app.start();
   } catch (e) {
     console.error("Failed to initialize application", e);
